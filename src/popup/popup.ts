@@ -50,7 +50,9 @@ class ArticleFormatter {
  * Get information about the current browser tab.
  */
 const getCurrentTab = async (): Promise<BrowserTab> => {
-  const tab = (await browser.tabs.query({active: true, currentWindow: true}))[0];
+  const tab = (
+    await browser.tabs.query({ active: true, currentWindow: true })
+  )[0];
 
   if (!(tab?.id && tab.url)) {
     throw new Error("Cannot find current tab");
@@ -67,7 +69,10 @@ const getCurrentTab = async (): Promise<BrowserTab> => {
  */
 const extractContent = async (): Promise<string> => {
   const tab = await getCurrentTab();
-  const pageContent: PageContent = await browser.tabs.sendMessage(tab.id, "extractContent");
+  const pageContent: PageContent = await browser.tabs.sendMessage(
+    tab.id,
+    "extractContent",
+  );
   const article = new ArticleFormatter().formatArticle(pageContent.html);
 
   return [
