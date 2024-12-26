@@ -1,22 +1,22 @@
-import { Article, BrowserTab, PageContent } from "../types"
-import { Readability } from "@mozilla/readability"
-import TurndownService from "turndown"
+import { Readability } from "@mozilla/readability";
+import TurndownService from "turndown";
+import { Article, BrowserTab, PageContent } from "../types";
 
 /**
  * Converts HTML into Notion’s Markdown format.
  */
 class ArticleFormatter {
-  private formatter: TurndownService
+  private formatter: TurndownService;
 
   constructor() {
     this.formatter = new TurndownService({
-      headingStyle: "atx",
-      hr: "---",
       bulletListMarker: "*",
       codeBlockStyle: "fenced",
       emDelimiter: "_",
+      headingStyle: "atx",
+      hr: "---",
       strongDelimiter: "**",
-    })
+    });
   }
 
   /**
@@ -28,21 +28,21 @@ class ArticleFormatter {
    * method throws on a page that should have an article, look at these docs:
    * @see https://github.com/mozilla/readability
    */
-  formatArticle(html: string): Article {
-    const doc = new DOMParser().parseFromString(html, "text/html")
-    const reader = new Readability(doc)
-    const article = reader.parse()
+  public formatArticle(html: string): Article {
+    const doc = new DOMParser().parseFromString(html, "text/html");
+    const reader = new Readability(doc);
+    const article = reader.parse();
 
     if (!article) {
-      throw new Error("No article content found.")
+      throw new Error("No article content found.");
     }
 
     return {
       byline: article.byline,
-      markdownContent: this.formatter.turndown(article.content),
       length: article.length,
-      title: article.title
-    }
+      markdownContent: this.formatter.turndown(article.content),
+      title: article.title,
+    };
   }
 }
 
@@ -50,25 +50,25 @@ class ArticleFormatter {
  * Get information about the current browser tab.
  */
 const getCurrentTab = async (): Promise<BrowserTab> => {
-  const tab = (await browser.tabs.query({active: true, currentWindow: true}))[0]
+  const tab = (await browser.tabs.query({active: true, currentWindow: true}))[0];
 
   if (!(tab?.id && tab.url)) {
-    throw new Error("Cannot find current tab")
+    throw new Error("Cannot find current tab");
   }
 
   return {
     id: tab.id,
-    url: tab.url
-  }
-}
+    url: tab.url,
+  };
+};
 
 /**
  * Extracts and formats content from the current browser tab.
  */
 const extractContent = async (): Promise<string> => {
-  const tab = await getCurrentTab()
-  const pageContent: PageContent = await browser.tabs.sendMessage(tab.id, "extractContent")
-  const article = new ArticleFormatter().formatArticle(pageContent.html)
+  const tab = await getCurrentTab();
+  const pageContent: PageContent = await browser.tabs.sendMessage(tab.id, "extractContent");
+  const article = new ArticleFormatter().formatArticle(pageContent.html);
 
   return [
     `# ${article.title}`,
@@ -76,50 +76,49 @@ const extractContent = async (): Promise<string> => {
     `**Author:** ${article.byline}`,
     `**Image:** ${pageContent.ogImage}`,
     "---",
-    article.markdownContent
-  ].join("\n")
-}
+    article.markdownContent,
+  ].join("\n");
+};
 
 document.addEventListener("DOMContentLoaded", async (): Promise<void> => {
-  const textarea = document.getElementById("content") as HTMLTextAreaElement
+  const textarea = document.getElementById("content") as HTMLTextAreaElement;
   if (!textarea) {
-    throw new Error("Can't find the content textarea")
+    throw new Error("Can't find the content textarea");
   }
 
   try {
-    textarea.value = await extractContent()
+    textarea.value = await extractContent();
   } catch (error) {
-    textarea.value = `Error extracting content: ${error instanceof Error ? error.message : error}`
-    console.error("Error extracting content:", error)
+    textarea.value = `Error extracting content: ${error instanceof Error ? error.message : error}`;
   }
 
   // Copy button handler
-  const copyButton = document.getElementById("copy")
+  const copyButton = document.getElementById("copy");
   if (copyButton) {
     copyButton.addEventListener("click", async (): Promise<void> => {
       try {
-        await navigator.clipboard.writeText(textarea.value)
+        await navigator.clipboard.writeText(textarea.value);
 
-        const button = document.getElementById("copy")
+        const button = document.getElementById("copy");
         if (button) {
-          button.textContent = "Copied!"
+          button.textContent = "Copied!";
           setTimeout((): void => {
             if (button) {
-              button.textContent = "Copy to Clipboard"
+              button.textContent = "Copy to Clipboard";
             }
-          }, 2000)
+          }, 2000);
         }
       } catch (error) {
-        console.error("Error copying text:", error)
+        textarea.value = `Error copying text: ${error instanceof Error ? error.message : error}`;
       }
-    })
+    });
   }
 
   // Close button handler
-  const closeButton = document.getElementById("close")
+  const closeButton = document.getElementById("close");
   if (closeButton) {
     closeButton.addEventListener("click", (): void => {
-      window.close()
-    })
+      window.close();
+    });
   }
-})
+});

@@ -7,13 +7,14 @@
   "license": "MIT",
   "type": "module",
   "scripts": {
-    "build": "vite build",
-    "compile": "tsc --noEmit",
+    "build": "npm run compile && vite build",
+    "compile": "tsc --noEmit && tslint -c tslint.json src/**/*.ts",
     "dev": "vite"
   },
   "devDependencies": {
     "@types/firefox-webext-browser": "^120.0.4",
     "@types/turndown": "^5.0.5",
+    "tslint": "^5.20.1",
     "typescript": "^5.7.2",
     "vite": "^6.0.5",
     "vite-plugin-web-extension": "^4.0.0"

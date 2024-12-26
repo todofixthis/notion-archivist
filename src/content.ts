@@ -6,15 +6,15 @@ browser.runtime.onMessage.addListener(
         case "extractContent":
           return Promise.resolve({
             html: document.documentElement.outerHTML,
-            url: document.location.href,
             ogImage: (
                 document.querySelector('meta[property="og:image"]') as HTMLMetaElement
-            )?.content
-          })
+            )?.content,
+            url: document.location.href,
+          });
 
         default:
-          throw new Error(`Unexpected message ${JSON.stringify(message)}`)
+          throw new Error(`Unexpected message ${JSON.stringify(message)}`);
       }
 
-    }
-)
+    },
+);

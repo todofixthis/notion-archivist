@@ -1,6 +1,7 @@
 # TODO
 
-* prettier
+* Prettier
+* Display errors as a toast notification in the popup
 * Settings page
     * Authenticate to Notion
     * Set parent page
