@@ -8,7 +8,7 @@
   "type": "module",
   "scripts": {
     "build": "npm run compile && vite build",
-    "compile": "tsc --noEmit && prettier --write . && tslint -c tslint.json src/**/*.ts",
+    "compile": "tsc --noEmit && prettier --write . && tslint -c tslint.json --fix src/**/*.ts",
     "dev": "vite",
     "prepare": "husky"
   },
