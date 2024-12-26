@@ -3,13 +3,15 @@
   "name": "<name & version are overwritten in vite.config.ts>",
   "version": "0.0.0",
   "action": {
+    "default_icon": {
+      "16": "icon/icon-16.png",
+      "32": "icon/icon-32.png",
+      "48": "icon/icon-48.png",
+      "96": "icon/icon-96.png",
+      "128": "icon/icon-128.png"
+    },
+    "default_popup": "popup/index.html",
     "default_title": "Archive content to Notion"
-  },
-  "background": {
-    "scripts": [
-      "background.ts"
-    ],
-    "type": "module"
   },
   "content_scripts": [
     {
@@ -24,13 +26,6 @@
   "host_permissions": [
     "<all_urls>"
   ],
-  "icons": {
-    "16": "icon/icon-16.png",
-    "32": "icon/icon-32.png",
-    "48": "icon/icon-48.png",
-    "96": "icon/icon-96.png",
-    "128": "icon/icon-128.png"
-  },
   "permissions": [
     "activeTab",
     "clipboardWrite",

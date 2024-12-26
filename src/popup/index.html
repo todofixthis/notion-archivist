@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <link rel="stylesheet" href="chrome://global/skin/in-content/common.css">
+  <link rel="stylesheet" href="popup.css">
+  <title>Preview Article</title>
+</head>
+<body>
+<div class="panel">
+  <div class="panel-section-header">
+    <h1>Preview Article</h1>
+  </div>
+
+  <div class="panel-section-content">
+    <label for="content">Markdown</label>
+    <textarea id="content" readonly></textarea>
+  </div>
+
+  <div class="panel-section-footer">
+    <button id="close">Cancel</button>
+    <button id="copy" class="primary">Copy to Clipboard</button>
+  </div>
+</div>
+<!-- Ignore the unresolved reference warning.
+     Vite will inject the JS file at build time.
+-->
+<script src="popup.js"></script>
+</body>
+</html>

@@ -1,6 +1,6 @@
 # TODO
 
-* Popup with preview
+* prettier
 * Settings page
     * Authenticate to Notion
     * Set parent page
