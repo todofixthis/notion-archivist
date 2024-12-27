@@ -1,6 +1,16 @@
 import { Readability } from "@mozilla/readability";
 import TurndownService from "turndown";
-import { Article } from "./types";
+
+/**
+ * Readability data extracted from an article.
+ */
+// tslint:disable-next-line:interface-over-type-literal
+export type Article = {
+  title: string;
+  byline: string;
+  markdownContent: string;
+  length: number;
+};
 
 /**
  * Converts HTML into Notion’s Markdown format.
@@ -38,7 +48,7 @@ export class ArticleFormatter {
     }
 
     return {
-      byline: article.byline,
+      byline: article.byline || "",
       length: article.length,
       markdownContent: this.formatter.turndown(article.content),
       title: article.title,

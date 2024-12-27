@@ -1,5 +1,6 @@
-import { ArticleFormatter } from "../articleFormatter";
+import { Article, ArticleFormatter } from "../articleFormatter";
 import { BrowserTab, PageContent } from "../types";
+import PopupContext from "./popupContext";
 
 /**
  * Get information about the current browser tab.
@@ -20,9 +21,18 @@ const getCurrentTab = async (): Promise<BrowserTab> => {
 };
 
 /**
+ * Formatted article data, ready to be loaded into Notion.
+ */
+// tslint:disable-next-line:interface-over-type-literal
+export type FormattedArticle = Article & {
+  coverURL: string;
+  url: string;
+};
+
+/**
  * Extracts and formats content from the current browser tab.
  */
-const extractContent = async (): Promise<string> => {
+const extractContent = async (): Promise<FormattedArticle> => {
   const tab = await getCurrentTab();
   const pageContent: PageContent = await browser.tabs.sendMessage(
     tab.id,
@@ -30,37 +40,46 @@ const extractContent = async (): Promise<string> => {
   );
   const article = new ArticleFormatter().formatArticle(pageContent.html);
 
-  return [
-    `# ${article.title}`,
-    `**URL:** ${pageContent.url}`,
-    `**Author:** ${article.byline}`,
-    `**Image:** ${pageContent.ogImage}`,
-    "---",
-    article.markdownContent,
-  ].join("\n");
+  return {
+    ...article,
+    coverURL: pageContent.ogImage || "",
+    url: pageContent.url,
+  };
 };
 
-document.addEventListener("DOMContentLoaded", async (): Promise<void> => {
-  const textarea = PopupContext.markdownContent();
+/**
+ * Consolidates article data, so that we can copy it to clipboard as a string value.
+ *
+ * If the user has modified any values (e.g., by editing the Markdown content in the
+ * textarea), the result will reflect these changes.
+ */
+const formatForCopying = (): string =>
+  [
+    `# ${PopupContext.articleTitle().value}`,
+    `**URL:** ${PopupContext.articleURL().value}`,
+    `**Author:** ${PopupContext.articleByline().value}`,
+    `**Cover:** ${PopupContext.articleCoverURL().value}`,
+    "---",
+    PopupContext.articleContent().value,
+  ].join("\n");
 
-  try {
-    textarea.value = await extractContent();
-  } catch (error) {
-    textarea.value = `Error extracting content: ${error instanceof Error ? error.message : error}`;
-  }
+document.addEventListener("DOMContentLoaded", async (): Promise<void> => {
+  const article: FormattedArticle = await extractContent();
+
+  PopupContext.articleByline().value = article.byline;
+  PopupContext.articleContent().value = article.markdownContent;
+  PopupContext.articleCoverURL().value = article.coverURL;
+  PopupContext.articleTitle().value = article.title;
+  PopupContext.articleURL().value = article.url;
 
   // Wire up copy button.
   const copyButton = PopupContext.copyButton();
   copyButton.addEventListener("click", async (): Promise<void> => {
-    try {
-      await navigator.clipboard.writeText(textarea.value);
-      copyButton.textContent = "Copied!";
-      setTimeout((): void => {
-        copyButton.textContent = "Copy to Clipboard";
-      }, 2000);
-    } catch (error) {
-      textarea.value = `Error copying text: ${error instanceof Error ? error.message : error}`;
-    }
+    await navigator.clipboard.writeText(formatForCopying());
+    copyButton.textContent = "Copied!";
+    setTimeout((): void => {
+      copyButton.textContent = "Copy Markdown";
+    }, 2000);
   });
 
   // Wire up close button.

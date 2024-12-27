@@ -1,17 +1,33 @@
 /**
  * Provides accessors for different elements in the popup.
  */
-class PopupContext {
+export default class PopupContext {
+  public static articleByline(): HTMLInputElement {
+    return this._getElement<HTMLInputElement>("articleByline");
+  }
+
+  public static articleContent(): HTMLTextAreaElement {
+    return this._getElement<HTMLTextAreaElement>("articleMarkdownContent");
+  }
+
+  public static articleCoverURL(): HTMLInputElement {
+    return this._getElement<HTMLInputElement>("articleCoverURL");
+  }
+
+  public static articleTitle(): HTMLInputElement {
+    return this._getElement<HTMLInputElement>("articleTitle");
+  }
+
+  public static articleURL(): HTMLInputElement {
+    return this._getElement<HTMLInputElement>("articleURL");
+  }
+
   public static closeButton(): HTMLButtonElement {
     return this._getElement<HTMLButtonElement>("closeButton");
   }
 
   public static copyButton(): HTMLButtonElement {
     return this._getElement<HTMLButtonElement>("copyButton");
-  }
-
-  public static markdownContent(): HTMLTextAreaElement {
-    return this._getElement<HTMLTextAreaElement>("markdownContent");
   }
 
   protected static _getElement<ElementType extends HTMLElement>(

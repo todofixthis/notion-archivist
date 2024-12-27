@@ -11,7 +11,7 @@ body {
   color: var(--in-content-page-color);
 }
 
-.panel {
+div.panel {
   display: flex;
   flex-direction: column;
   height: 100%;
@@ -19,38 +19,23 @@ body {
   box-sizing: border-box;
 }
 
-.panel-section-header {
+div.panel-section-header {
   padding: 4px 16px 16px;
   border-bottom: 1px solid var(--in-content-border-color);
 }
 
-.panel-section-header h1 {
+div.panel-section-header h1 {
   font-size: 1.385em;
   font-weight: normal;
   margin: 0;
   color: var(--in-content-text-color);
 }
 
-.panel-section-content {
-  flex-grow: 1;
+div.panel-section-content {
   padding: 16px;
-  overflow: auto;
 }
 
-#content {
-  width: 100%;
-  height: 100%;
-  resize: none;
-  padding: 8px;
-  border: 1px solid var(--in-content-border-color);
-  border-radius: 2px;
-  background: var(--in-content-box-background);
-  color: var(--in-content-text-color);
-  font-family: Menlo, Consolas, monospace;
-  line-height: 1.4;
-}
-
-.panel-section-footer {
+div.panel-section-footer {
   padding: 16px;
   display: flex;
   justify-content: flex-end;
@@ -93,6 +78,15 @@ button.primary:active {
 
 button:focus {
   box-shadow: 0 0 0 1px var(--in-content-border-focus);
+}
+
+input,
+textarea {
+  width: 100%;
+}
+
+textarea {
+  height: 12em;
 }
 
 /* Firefox scrollbar styling */

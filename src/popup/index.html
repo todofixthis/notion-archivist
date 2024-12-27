@@ -13,18 +13,35 @@
       </div>
 
       <div class="panel-section-content">
-        <label for="markdownContent">Markdown</label>
-        <textarea id="markdownContent" readonly></textarea>
+        <label for="articleTitle">Title</label>
+        <input id="articleTitle" type="text" />
+      </div>
+
+      <div class="panel-section-content">
+        <label for="articleByline">Author</label>
+        <input id="articleByline" type="text" />
+      </div>
+
+      <div class="panel-section-content">
+        <label for="articleMarkdownContent">Markdown</label>
+        <textarea id="articleMarkdownContent"></textarea>
+      </div>
+
+      <div class="panel-section-content">
+        <label for="articleCoverURL">Cover URL</label>
+        <input id="articleCoverURL" type="text" />
+      </div>
+
+      <div class="panel-section-content">
+        <label for="articleURL">Article URL</label>
+        <input id="articleURL" type="text" />
       </div>
 
       <div class="panel-section-footer">
-        <button id="closeButton">Cancel</button>
-        <button id="copyButton" class="primary">Copy to Clipboard</button>
+        <button id="closeButton">Close</button>
+        <button id="copyButton" class="primary">Copy Markdown</button>
       </div>
     </div>
-    <!-- Ignore the unresolved reference warning.
-     Vite will inject the JS file at build time.
--->
-    <script src="popup.js"></script>
+    <script src="popup.ts" type="module"></script>
   </body>
 </html>
