@@ -13,14 +13,13 @@ function generateManifest() {
 
   return {
     ...manifest,
-    name: pkg.name,
     description: pkg.description,
+    name: pkg.name,
     version: pkg.version,
   };
 }
 
 export default defineConfig({
-  root: "src",
   build: {
     emptyOutDir: true,
     outDir: "../dist",
@@ -39,4 +38,5 @@ export default defineConfig({
       watchFilePaths: ["../package.json", "manifest.json"],
     }) as PluginOption,
   ],
+  root: "src",
 });
