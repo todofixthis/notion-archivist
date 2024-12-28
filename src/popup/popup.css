@@ -6,78 +6,6 @@
 body {
   width: var(--popup-width);
   height: var(--popup-height);
-  margin: 0;
-  background: var(--in-content-page-background);
-  color: var(--in-content-page-color);
-}
-
-div.panel {
-  display: flex;
-  flex-direction: column;
-  height: 100%;
-  padding: 16px;
-  box-sizing: border-box;
-}
-
-div.panel-section-header {
-  padding: 4px 16px 16px;
-  border-bottom: 1px solid var(--in-content-border-color);
-}
-
-div.panel-section-header h1 {
-  font-size: 1.385em;
-  font-weight: normal;
-  margin: 0;
-  color: var(--in-content-text-color);
-}
-
-div.panel-section-content {
-  padding: 16px;
-}
-
-div.panel-section-footer {
-  padding: 16px;
-  display: flex;
-  justify-content: flex-end;
-  gap: 8px;
-  border-top: 1px solid var(--in-content-border-color);
-}
-
-button {
-  min-width: 132px;
-  height: 32px;
-  padding: 0 8px;
-  font-size: 13px;
-  border-radius: 2px;
-  color: var(--in-content-button-text-color);
-  background-color: var(--in-content-button-background);
-  border: 1px solid var(--in-content-button-border-color);
-}
-
-button:hover {
-  background-color: var(--in-content-button-background-hover);
-}
-
-button:active {
-  background-color: var(--in-content-button-background-active);
-}
-
-button.primary {
-  background-color: var(--in-content-primary-button-background);
-  border-color: var(--in-content-primary-button-background);
-  color: var(--in-content-selected-text);
-}
-
-button.primary:hover {
-  background-color: var(--in-content-primary-button-background-hover);
-}
-
-button.primary:active {
-  background-color: var(--in-content-primary-button-background-active);
-}
-
-button:focus {
-  box-shadow: 0 0 0 1px var(--in-content-border-focus);
 }
 
 input,
@@ -87,10 +15,4 @@ textarea {
 
 textarea {
   height: 12em;
-}
-
-/* Firefox scrollbar styling */
-* {
-  scrollbar-width: thin;
-  scrollbar-color: var(--in-content-border-color) transparent;
 }

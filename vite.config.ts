@@ -26,12 +26,6 @@ export default defineConfig({
   },
   plugins: [
     webExtension({
-      // Load additional files not mentioned in `manifest.json`.
-      additionalInputs: [
-        "popup/index.html",
-        "popup/popup.css",
-        "popup/popup.ts",
-      ],
       // We don't take kindly to the c-word 'round these parts.
       browser: "firefox",
       manifest: generateManifest,

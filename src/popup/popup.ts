@@ -21,9 +21,8 @@ const getCurrentTab = async (): Promise<BrowserTab> => {
 };
 
 /**
- * Formatted article data, ready to be loaded into Notion.
+ * Formatted article data, ready to load into Notion.
  */
-// tslint:disable-next-line:interface-over-type-literal
 export type FormattedArticle = Article & {
   coverURL: string;
   url: string;

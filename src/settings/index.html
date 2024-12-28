@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Settings - Extension Options</title>
+    <link rel="stylesheet" href="chrome://global/skin/in-content/common.css" />
+    <link rel="stylesheet" href="../styles.css" />
+    <link rel="stylesheet" href="./settings.css" />
+  </head>
+  <body>
+    <div class="panel">
+      <div class="panel-section-header">
+        <h1>Extension Settings</h1>
+      </div>
+      <form id="settingsForm">
+        <div class="panel-section-content">
+          <label for="notionKey">Notion API Key</label>
+          <input
+            type="password"
+            id="notionKey"
+            placeholder="Enter your Notion integration token"
+          />
+          <p class="helper-text">
+            Create an internal integration token from your
+            <a href="https://www.notion.so/my-integrations" target="_blank">
+              Notion integrations page</a
+            >.
+          </p>
+        </div>
+
+        <div class="panel-section-footer">
+          <div id="validationMessage" class="message hidden"></div>
+          <button type="submit" class="primary">Save Settings</button>
+        </div>
+      </form>
+    </div>
+    <script src="./settings.ts" type="module"></script>
+  </body>
+</html>

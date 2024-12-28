@@ -1,6 +1,6 @@
 {
   "manifest_version": 3,
-  "name": "<name & version are overwritten in vite.config.ts>",
+  "name": "<name & version are overwritten in ../vite.config.ts>",
   "version": "0.0.0",
   "action": {
     "default_icon": {
@@ -13,6 +13,11 @@
     "default_popup": "popup/index.html",
     "default_title": "Archive content to Notion"
   },
+  "browser_specific_settings": {
+    "gecko": {
+      "id": "todofixthis__notion-archivist@users.noreply.github.com"
+    }
+  },
   "content_scripts": [
     {
       "matches": ["<all_urls>"],
@@ -20,5 +25,8 @@
     }
   ],
   "host_permissions": ["<all_urls>"],
-  "permissions": ["activeTab", "clipboardWrite", "scripting"]
+  "options_ui": {
+    "page": "settings/index.html"
+  },
+  "permissions": ["activeTab", "clipboardWrite", "storage"]
 }

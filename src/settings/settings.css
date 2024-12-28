@@ -1,0 +1,25 @@
+input {
+  width: 100%;
+  padding: 0.5rem;
+  margin-top: 0.5rem;
+}
+
+.message {
+  margin: 1rem 0;
+  padding: 0.75rem;
+  border-radius: 4px;
+}
+
+.message.success {
+  background-color: #e6f4ea;
+  color: #1e4620;
+}
+
+.message.error {
+  background-color: #fce8e6;
+  color: #c5221f;
+}
+
+.hidden {
+  display: none;
+}
