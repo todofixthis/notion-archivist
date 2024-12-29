@@ -1,21 +1,46 @@
+@keyframes enter {
+  from {
+    transform: translateY(-0.2rem);
+    opacity: 0.5;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+form {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 1rem;
+}
+
+[role="alert"] > * {
+  background: rgba(255, 0, 0, 0.05);
+  padding: 1rem;
+  animation: enter 0.3s ease;
+  width: 100%;
+}
+
 input {
   width: 100%;
   padding: 0.5rem;
   margin-top: 0.5rem;
 }
 
-.message {
+div.message {
   margin: 1rem 0;
   padding: 0.75rem;
   border-radius: 4px;
 }
 
-.message.success {
+div.message.success {
   background-color: #e6f4ea;
   color: #1e4620;
 }
 
-.message.error {
+div.message.error {
   background-color: #fce8e6;
   color: #c5221f;
 }

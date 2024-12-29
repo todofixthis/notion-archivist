@@ -13,11 +13,14 @@
         <h1>Extension Settings</h1>
       </div>
       <form id="settingsForm">
+        <div role="alert" aria-live="assertive"></div>
+
         <div class="panel-section-content">
           <label for="notionKey">Notion API Key</label>
           <input
             type="password"
             id="notionKey"
+            name="notionKey"
             placeholder="Enter your Notion integration token"
           />
           <p class="helper-text">
@@ -28,8 +31,15 @@
           </p>
         </div>
 
+        <div class="panel-section-content">
+          <label for="parentPage">Set parent page</label>
+          <input type="text" id="parentPage" placeholder="Search" />
+          <p class="helper-text">
+            Archivist will create new pages under this parent page.
+          </p>
+        </div>
+
         <div class="panel-section-footer">
-          <div id="validationMessage" class="message hidden"></div>
           <button type="submit" class="primary">Save Settings</button>
         </div>
       </form>

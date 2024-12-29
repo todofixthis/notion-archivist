@@ -1,71 +1,79 @@
-import { Client } from "@notionhq/client";
+import {
+  Client,
+  isNotionClientError,
+  NotionClientError,
+} from "@notionhq/client";
+import { z } from "zod";
+import { attach, create, Handler } from "./frrm";
+
+const SettingsSchema = z.object({
+  notionKey: z.optional(z.string()),
+  parentPage: z.optional(z.string()),
+});
+
+type SettingsData = z.infer<typeof SettingsSchema>;
 
 class SettingsManager {
-  private form: HTMLFormElement;
-  private apiKeyInput: HTMLInputElement;
-  private messageElement: HTMLElement;
+  private readonly formHandler: Handler;
 
-  constructor() {
-    this.form = document.getElementById("settingsForm") as HTMLFormElement;
-    this.apiKeyInput = document.getElementById("notionKey") as HTMLInputElement;
-    this.messageElement = document.getElementById(
-      "validationMessage",
-    ) as HTMLElement;
-  }
+  public constructor() {
+    this.formHandler = create({
+      onBusy: "Saving...",
+      onError: document.querySelector('[role="alert"]')! as HTMLElement,
+      onSubmit: async (data: SettingsData): Promise<boolean | Error> => {
+        const newData: SettingsData = {
+          notionKey: "",
+          parentPage: "",
+        };
 
-  public async init(): Promise<void> {
-    await this.initialiseForm();
-    this.setupEventListeners();
-  }
+        if (data.notionKey) {
+          const validationResult = await this.validateNotionKey(data.notionKey);
+          if (isNotionClientError(validationResult)) {
+            return validationResult;
+          }
+          newData.notionKey = data.notionKey;
+        }
 
-  private async initialiseForm(): Promise<void> {
-    const { notionKey } = await browser.storage.sync.get("notionKey");
-    if (notionKey) {
-      this.apiKeyInput.value = notionKey;
-    }
-  }
+        if (data.parentPage) {
+          newData.parentPage = data.parentPage;
+        }
 
-  private setupEventListeners(): void {
-    this.form.addEventListener("submit", async (e) => {
-      e.preventDefault();
-      await this.handleSubmit();
+        await browser.storage.sync.set(newData);
+        return true;
+      },
+      schema: SettingsSchema,
     });
   }
 
-  private async validateNotionKey(key: string): Promise<boolean> {
+  public async attach(form: HTMLFormElement): Promise<void> {
+    attach(form, this.formHandler);
+  }
+
+  private async validateNotionKey(
+    key: string,
+  ): Promise<void | NotionClientError> {
     const notion = new Client({ auth: key });
-    // Try to search for a page to verify the token
-    await notion.search({ query: "test", page_size: 1 });
-    return true;
-  }
-
-  private showMessage(message: string, isError: boolean): void {
-    this.messageElement.textContent = message;
-    this.messageElement.className = `message ${isError ? "error" : "success"}`;
-  }
-
-  private async handleSubmit(): Promise<void> {
-    const key = this.apiKeyInput.value.trim();
-
-    if (!key) {
-      this.showMessage("Please enter an API key", true);
-      return;
-    }
-
     try {
-      await this.validateNotionKey(key);
-      await browser.storage.sync.set({ notionKey: key });
-      this.showMessage("Success", false);
+      // Try to search for a page to verify the token.
+      await notion.search({ query: "test", page_size: 1 });
     } catch (e: unknown) {
-      this.showMessage(
-        e instanceof Error ? e.message : JSON.stringify(e),
-        true,
-      );
+      if (isNotionClientError(e)) {
+        return e;
+      }
+      throw e;
     }
   }
 }
 
 // Initialize settings when the page loads
 document.addEventListener("DOMContentLoaded", async () => {
-  await new SettingsManager().init();
+  const form: HTMLFormElement = document.getElementById(
+    "settingsForm",
+  ) as HTMLFormElement;
+
+  if (!form) {
+    throw new Error("Cannot find settings form in the DOM!");
+  }
+
+  await new SettingsManager().attach(form);
 });
