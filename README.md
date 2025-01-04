@@ -11,5 +11,5 @@
 
 # Setup instructions
 
-- Add internal integration.
-- Navigate to parent page in Notion and connect to the internal integration (via meatball menu).
+- Set up internal integration in Notion and copy secret key.
+- How to get the parent database/page ID.

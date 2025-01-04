@@ -30,6 +30,10 @@ export default class PopupContext {
     return this._getElement<HTMLButtonElement>("copyButton");
   }
 
+  public static toast(): HTMLElement {
+    return this._getElement<HTMLElement>("toast");
+  }
+
   protected static _getElement<ElementType extends HTMLElement>(
     id: string,
   ): ElementType {

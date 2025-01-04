@@ -68,7 +68,7 @@ const formatForCopying = (): string =>
  * notification.
  */
 const toast = (message: string): void => {
-  const container = document.getElementById("toast")! as HTMLElement;
+  const container = PopupContext.toast();
   container.classList[message === "" ? "add" : "remove"]("hidden");
   container.innerText = message;
 };

@@ -5,10 +5,11 @@ import {
 } from "@notionhq/client";
 import { z } from "zod";
 import { attach, create, Handler } from "./frrm";
+import SettingsFormContext from "./settingsFormContext";
 
 const SettingsSchema = z.object({
   notionKey: z.string(),
-  parentPage: z.string(),
+  parentID: z.string(),
 });
 
 type SettingsData = z.infer<typeof SettingsSchema>;
@@ -23,11 +24,11 @@ class SettingsManager {
   public constructor() {
     this.formHandler = create({
       onBusy: "Saving...",
-      onError: document.getElementById("toast")! as HTMLElement,
+      onError: SettingsFormContext.toast(),
       onSubmit: async (data: SettingsData): Promise<boolean | Error> => {
         const newSettings: SettingsData = {
           notionKey: "",
-          parentPage: "",
+          parentID: "",
         };
 
         const currentSettings = await this.getCurrentSettings();
@@ -44,8 +45,8 @@ class SettingsManager {
           newSettings.notionKey = data.notionKey;
         }
 
-        if (data.parentPage !== currentSettings?.parentPage) {
-          newSettings.parentPage = data.parentPage;
+        if (data.parentID !== currentSettings?.parentID) {
+          newSettings.parentID = data.parentID;
         }
 
         await browser.storage.sync.set(newSettings);
@@ -61,11 +62,10 @@ class SettingsManager {
   public async attach(form: HTMLFormElement): Promise<void> {
     // Prefill form values.
     const currentSettings = await this.getCurrentSettings();
-    (form.querySelector('[name="notionKey"]') as HTMLInputElement).value =
-      currentSettings.notionKey;
-    (form.querySelector('[name="parentPage"]') as HTMLInputElement).value =
-      currentSettings.parentPage;
+    SettingsFormContext.notionKeyInput().value = currentSettings.notionKey;
+    SettingsFormContext.parentIDInput().value = currentSettings.parentID;
 
+    // Attach form handler.
     attach(form, this.formHandler);
   }
 
@@ -123,13 +123,5 @@ class SettingsManager {
  * Initialises the settings form when the page loads.
  */
 document.addEventListener("DOMContentLoaded", async () => {
-  const form: HTMLFormElement = document.getElementById(
-    "settingsForm",
-  ) as HTMLFormElement;
-
-  if (!form) {
-    throw new Error("Cannot find settings form in the DOM!");
-  }
-
-  await new SettingsManager().attach(form);
+  await new SettingsManager().attach(SettingsFormContext.form());
 });
