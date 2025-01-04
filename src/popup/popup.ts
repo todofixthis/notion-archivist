@@ -62,27 +62,65 @@ const formatForCopying = (): string =>
     PopupContext.articleContent().value,
   ].join("\n");
 
+/**
+ * Displays a toast notification.
+ * @param message Message to display. Specify empty string to hide the toast
+ * notification.
+ */
+const toast = (message: string): void => {
+  const container = document.getElementById("toast")! as HTMLElement;
+  container.classList[message === "" ? "add" : "remove"]("hidden");
+  container.innerText = message;
+};
+
 document.addEventListener("DOMContentLoaded", async (): Promise<void> => {
-  const article: FormattedArticle = await extractContent();
+  toast("");
+  try {
+    const article: FormattedArticle = await extractContent();
 
-  PopupContext.articleByline().value = article.byline;
-  PopupContext.articleContent().value = article.markdownContent;
-  PopupContext.articleCoverURL().value = article.coverURL;
-  PopupContext.articleTitle().value = article.title;
-  PopupContext.articleURL().value = article.url;
+    PopupContext.articleByline().value = article.byline;
+    PopupContext.articleContent().value = article.markdownContent;
+    PopupContext.articleCoverURL().value = article.coverURL;
+    PopupContext.articleTitle().value = article.title;
+    PopupContext.articleURL().value = article.url;
 
-  // Wire up copy button.
-  const copyButton = PopupContext.copyButton();
-  copyButton.addEventListener("click", async (): Promise<void> => {
-    await navigator.clipboard.writeText(formatForCopying());
-    copyButton.textContent = "Copied!";
-    setTimeout((): void => {
-      copyButton.textContent = "Copy Markdown";
-    }, 2000);
-  });
+    // Wire up copy button.
+    const copyButton = PopupContext.copyButton();
+    copyButton.addEventListener("click", async (): Promise<void> => {
+      toast("");
+      try {
+        await navigator.clipboard.writeText(formatForCopying());
+        copyButton.textContent = "Copied!";
+        setTimeout((): void => {
+          copyButton.textContent = "Copy Markdown";
+        }, 2000);
+      } catch (e: unknown) {
+        toast(
+          e instanceof Error
+            ? e.message
+            : `Unexpected error when copying: ${JSON.stringify(e)}`,
+        );
+      }
+    });
 
-  // Wire up close button.
-  PopupContext.closeButton().addEventListener("click", (): void => {
-    window.close();
-  });
+    // Wire up close button.
+    PopupContext.closeButton().addEventListener("click", (): void => {
+      toast("");
+      try {
+        window.close();
+      } catch (e: unknown) {
+        toast(
+          e instanceof Error
+            ? e.message
+            : `Unexpected error when closing popup: ${JSON.stringify(e)}`,
+        );
+      }
+    });
+  } catch (e: unknown) {
+    toast(
+      e instanceof Error
+        ? e.message
+        : `Unexpected error when parsing content: ${JSON.stringify(e)}`,
+    );
+  }
 });

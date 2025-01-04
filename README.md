@@ -1,8 +1,5 @@
 # TODO
 
-- [Options page](https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/user_interface/Options_pages)
-  - Set parent page UUID (back out the autocompletion code for now, sorry 😅)
-- Display errors as a toast notification in the popup
 - Move close/copy buttons to the top of the popup, and only scroll the form area.
 - Create the page in Notion
 - Integrate with Claude to remove promotional content/CTAs from the content?

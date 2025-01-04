@@ -13,6 +13,9 @@ const SettingsSchema = z.object({
 
 type SettingsData = z.infer<typeof SettingsSchema>;
 
+/**
+ * Accesses, validates, and stores settings for the extension.
+ */
 class SettingsManager {
   protected currentSettings?: SettingsData;
   protected readonly formHandler: Handler;
@@ -20,7 +23,7 @@ class SettingsManager {
   public constructor() {
     this.formHandler = create({
       onBusy: "Saving...",
-      onError: document.querySelector('[role="alert"]')! as HTMLElement,
+      onError: document.getElementById("toast")! as HTMLElement,
       onSubmit: async (data: SettingsData): Promise<boolean | Error> => {
         const newSettings: SettingsData = {
           notionKey: "",
