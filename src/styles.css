@@ -73,6 +73,25 @@ button:focus {
   box-shadow: 0 0 0 1px var(--in-content-border-focus);
 }
 
+/* Toast notification */
+@keyframes enter {
+  from {
+    transform: translateY(-0.2rem);
+    opacity: 0.5;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+[role="alert"] > * {
+  background: rgba(255, 0, 0, 0.05);
+  padding: 1rem;
+  animation: enter 0.3s ease;
+  width: 100%;
+}
+
 /* Firefox scrollbar styling */
 * {
   scrollbar-width: thin;
