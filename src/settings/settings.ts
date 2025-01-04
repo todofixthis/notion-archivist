@@ -52,31 +52,55 @@ class SettingsManager {
     });
   }
 
+  /**
+   * Attach the form handler to a form.
+   */
   public async attach(form: HTMLFormElement): Promise<void> {
-    attach(form, this.formHandler);
-
+    // Prefill form values.
     const currentSettings = await this.getCurrentSettings();
     (form.querySelector('[name="notionKey"]') as HTMLInputElement).value =
       currentSettings.notionKey;
     (form.querySelector('[name="parentPage"]') as HTMLInputElement).value =
       currentSettings.parentPage;
+
+    attach(form, this.formHandler);
   }
 
+  /**
+   * Lazy-load the extension settings from local storage.
+   */
   public async getCurrentSettings(): Promise<SettingsData> {
     this.currentSettings ||= (await browser.storage.sync.get()) as SettingsData;
     return this.currentSettings;
   }
 
+  /**
+   * Initialises a Notion API client.
+   *
+   * Note: assumes private integration (requires bearer token, not OAuth2).
+   *
+   * @param notionKey Notion integration secret key.
+   * @protected
+   */
   protected async getNotionClient(notionKey?: string): Promise<null | Client> {
     notionKey ||= (await this.getCurrentSettings()).notionKey;
     return notionKey ? new Client({ auth: notionKey }) : null;
   }
 
+  /**
+   * Validates the given Notion integration key.
+   *
+   * Note: assumes private integration (requires bearer token, not OAuth2).
+   *
+   * @param notionKey Notion integration secret key.
+   * @protected
+   */
   protected async validateNotionKey(
     notionKey: string,
   ): Promise<void | NotionClientError> {
     const notionClient = await this.getNotionClient(notionKey);
     if (!notionClient) {
+      // `notionKey` is empty, so nothing to validate.
       return;
     }
 
@@ -92,7 +116,9 @@ class SettingsManager {
   }
 }
 
-// Initialize settings when the page loads
+/**
+ * Initialises the settings form when the page loads.
+ */
 document.addEventListener("DOMContentLoaded", async () => {
   const form: HTMLFormElement = document.getElementById(
     "settingsForm",
