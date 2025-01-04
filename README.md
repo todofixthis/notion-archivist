@@ -1,6 +1,5 @@
 # TODO
 
-- Move close/copy buttons to the top of the popup, and only scroll the form area.
 - Create the page in Notion
 - Integrate with Claude to remove promotional content/CTAs from the content?
   - Clean up title and byline (e.g. remove site name suffix).

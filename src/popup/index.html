@@ -9,40 +9,42 @@
   </head>
   <body>
     <div class="panel">
-      <div class="panel-section-header">
+      <div class="panel-header">
         <h1>Preview Article</h1>
+
+        <div class="actions">
+          <button id="closeButton">Close</button>
+          <button id="copyButton" class="primary">Copy Markdown</button>
+        </div>
       </div>
 
       <div id="toast" role="alert" aria-live="assertive"></div>
 
-      <div class="panel-section-content">
-        <label for="articleTitle">Title</label>
-        <input id="articleTitle" type="text" />
-      </div>
+      <div class="panel-body">
+        <div class="section">
+          <label for="articleTitle">Title</label>
+          <input id="articleTitle" type="text" />
+        </div>
 
-      <div class="panel-section-content">
-        <label for="articleByline">Author</label>
-        <input id="articleByline" type="text" />
-      </div>
+        <div class="section">
+          <label for="articleByline">Author</label>
+          <input id="articleByline" type="text" />
+        </div>
 
-      <div class="panel-section-content">
-        <label for="articleMarkdownContent">Markdown</label>
-        <textarea id="articleMarkdownContent"></textarea>
-      </div>
+        <div class="section">
+          <label for="articleMarkdownContent">Markdown</label>
+          <textarea id="articleMarkdownContent"></textarea>
+        </div>
 
-      <div class="panel-section-content">
-        <label for="articleCoverURL">Cover URL</label>
-        <input id="articleCoverURL" type="text" />
-      </div>
+        <div class="section">
+          <label for="articleCoverURL">Cover URL</label>
+          <input id="articleCoverURL" type="text" />
+        </div>
 
-      <div class="panel-section-content">
-        <label for="articleURL">Article URL</label>
-        <input id="articleURL" type="text" />
-      </div>
-
-      <div class="panel-section-footer">
-        <button id="closeButton">Close</button>
-        <button id="copyButton" class="primary">Copy Markdown</button>
+        <div class="section">
+          <label for="articleURL">Article URL</label>
+          <input id="articleURL" type="text" />
+        </div>
       </div>
     </div>
     <script src="./popup.ts" type="module"></script>

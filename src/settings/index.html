@@ -9,48 +9,51 @@
   </head>
   <body>
     <div class="panel">
-      <div class="panel-section-header">
+      <div class="panel-header">
         <h1>Extension Settings</h1>
-      </div>
-      <form id="settingsForm">
-        <div id="toast" role="alert" aria-live="assertive"></div>
 
-        <div class="panel-section-content">
-          <label for="notionKey">Notion API Key</label>
-          <input
-            type="password"
-            id="notionKey"
-            name="notionKey"
-            placeholder="Enter your Notion integration token"
-          />
-          <p class="helper-text">
-            Create an internal integration token from your
-            <a href="https://www.notion.so/my-integrations" target="_blank">
-              Notion integrations page</a
-            >.
-          </p>
-        </div>
-
-        <div class="panel-section-content">
-          <label for="parentPage">Set parent page ID</label>
-          <input
-            type="text"
-            id="parentPage"
-            name="parentPage"
-            placeholder="Search"
-          />
-          <p class="helper-text">
-            Archivist will create new pages under this parent page. To get a
-            page's ID, navigate to the page in Notion, select "Copy Link" from
-            the meatball menu, and then enter the part of the URL between the
-            last <code>/</code> and the <code>?</code> into this input.
-          </p>
-        </div>
-
-        <div class="panel-section-footer">
+        <div class="actions">
           <button type="submit" class="primary">Save Settings</button>
         </div>
-      </form>
+      </div>
+
+      <div class="panel-body">
+        <form id="settingsForm">
+          <div id="toast" role="alert" aria-live="assertive"></div>
+
+          <div class="section">
+            <label for="notionKey">Notion API Key</label>
+            <input
+              type="password"
+              id="notionKey"
+              name="notionKey"
+              placeholder="Enter your Notion integration token"
+            />
+            <p class="helper-text">
+              Create an internal integration token from your
+              <a href="https://www.notion.so/my-integrations" target="_blank">
+                Notion integrations page</a
+              >.
+            </p>
+          </div>
+
+          <div class="section">
+            <label for="parentPage">Set parent page ID</label>
+            <input
+              type="text"
+              id="parentPage"
+              name="parentPage"
+              placeholder="Search"
+            />
+            <p class="helper-text">
+              Archivist will create new pages under this parent page. To get a
+              page's ID, navigate to the page in Notion, select "Copy Link" from
+              the meatball menu, and then enter the part of the URL between the
+              last <code>/</code> and the <code>?</code> into this input.
+            </p>
+          </div>
+        </form>
+      </div>
     </div>
     <script src="./settings.ts" type="module"></script>
   </body>

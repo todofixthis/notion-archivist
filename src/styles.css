@@ -1,50 +1,58 @@
 body {
-  margin: 0;
   background: var(--in-content-page-background);
   color: var(--in-content-page-color);
+  margin: 0;
 }
 
 div.panel {
+  box-sizing: border-box;
   display: flex;
   flex-direction: column;
   height: 100%;
   padding: 16px;
-  box-sizing: border-box;
+  overflow: hidden;
 }
 
-div.panel-section-header {
-  padding: 4px 16px 16px;
+div.panel-header {
+  align-items: center;
   border-bottom: 1px solid var(--in-content-border-color);
+  display: flex;
+  justify-content: space-between;
+  padding: 4px 16px 16px;
 }
 
-div.panel-section-header h1 {
+div.panel-header h1 {
+  color: var(--in-content-text-color);
   font-size: 1.385em;
   font-weight: normal;
   margin: 0;
-  color: var(--in-content-text-color);
 }
 
-div.panel-section-content {
+div.panel-body {
+  overflow-x: scroll;
+}
+
+div.panel-body div.section {
   padding: 16px;
 }
 
-div.panel-section-footer {
-  padding: 16px;
-  display: flex;
-  justify-content: flex-end;
-  gap: 8px;
+div.panel-footer {
   border-top: 1px solid var(--in-content-border-color);
+  display: flex;
+  gap: 8px;
+  justify-content: flex-end;
+  padding: 16px;
 }
 
 button {
-  min-width: 132px;
-  height: 32px;
-  padding: 0 8px;
-  font-size: 13px;
-  border-radius: 2px;
-  color: var(--in-content-button-text-color);
   background-color: var(--in-content-button-background);
+  border-radius: 2px;
   border: 1px solid var(--in-content-button-border-color);
+  color: var(--in-content-button-text-color);
+  font-size: 13px;
+  height: 32px;
+  min-width: 132px;
+  padding: 0 8px;
 }
 
 button:hover {
@@ -76,24 +84,24 @@ button:focus {
 /* Toast notification */
 @keyframes enter {
   from {
-    transform: translateY(-0.2rem);
     opacity: 0.5;
+    transform: translateY(-0.2rem);
   }
   to {
-    transform: translateY(0);
     opacity: 1;
+    transform: translateY(0);
   }
 }
 
 [role="alert"] > * {
+  animation: enter 0.3s ease;
   background: rgba(255, 0, 0, 0.05);
   padding: 1rem;
-  animation: enter 0.3s ease;
   width: 100%;
 }
 
 /* Firefox scrollbar styling */
 * {
-  scrollbar-width: thin;
   scrollbar-color: var(--in-content-border-color) transparent;
+  scrollbar-width: thin;
 }
