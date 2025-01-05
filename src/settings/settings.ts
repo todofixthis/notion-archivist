@@ -1,8 +1,4 @@
-import {
-  Client,
-  isNotionClientError,
-  NotionClientError,
-} from "@notionhq/client";
+import { isNotionClientError } from "@notionhq/client";
 import SettingsService, {
   SettingsData,
   SettingsSchema,
@@ -36,27 +32,14 @@ class SettingsManager {
       },
       onSubmit: async (data: SettingsData): Promise<boolean | Error> => {
         toast.toast("");
-
-        const targetSettings: SettingsData = {
-          ...(await this.settingsService.getSettings()),
-        };
-
-        if (data.notionKey !== targetSettings?.notionKey) {
-          if (data.notionKey) {
-            const validationResult = await this.validateNotionKey(
-              data.notionKey,
-            );
-            if (isNotionClientError(validationResult)) {
-              return new Error(`Notion key: ${validationResult.message}`);
-            }
+        try {
+          await this.settingsService.setSettings(data);
+        } catch (e: unknown) {
+          if (isNotionClientError(e)) {
+            return new Error(`Notion API Key: ${e.message}`);
           }
-          targetSettings.notionKey = data.notionKey;
+          throw e;
         }
-
-        targetSettings.parentID = data.parentID;
-
-        // Commit changes.
-        await this.settingsService.setSettings(targetSettings);
         toast.toast("Settings saved!", false);
 
         // Return `true` to reset form state.
@@ -79,47 +62,6 @@ class SettingsManager {
 
     // Attach form handler.
     attach(form, this.formHandler);
-  }
-
-  /**
-   * Initialises a Notion API client.
-   *
-   * Note: assumes private integration (requires bearer token, not OAuth2).
-   *
-   * @param notionKey Notion integration secret key.
-   * @protected
-   */
-  protected async getNotionClient(notionKey?: string): Promise<null | Client> {
-    notionKey ||= (await this.settingsService.getSettings()).notionKey;
-    return notionKey ? new Client({ auth: notionKey }) : null;
-  }
-
-  /**
-   * Validates the given Notion integration key.
-   *
-   * Note: assumes private integration (requires bearer token, not OAuth2).
-   *
-   * @param notionKey Notion integration secret key.
-   * @protected
-   */
-  protected async validateNotionKey(
-    notionKey: string,
-  ): Promise<void | NotionClientError> {
-    const notionClient = await this.getNotionClient(notionKey);
-    if (!notionClient) {
-      // `notionKey` is empty, so nothing to validate.
-      return;
-    }
-
-    try {
-      // Try to search for a page to verify the token.
-      await notionClient.search({ query: "test", page_size: 1 });
-    } catch (e: unknown) {
-      if (isNotionClientError(e)) {
-        return e;
-      }
-      throw e;
-    }
   }
 }
 
