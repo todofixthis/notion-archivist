@@ -4,7 +4,8 @@ import {
   NotionClientError,
 } from "@notionhq/client";
 import { z } from "zod";
-import { attach, create, Handler } from "./frrm";
+import ToastService from "../services/toastService";
+import { attach, create, Handler, Message } from "./frrm";
 import SettingsFormContext from "./settingsFormContext";
 
 const SettingsSchema = z.object({
@@ -22,18 +23,27 @@ class SettingsManager {
   protected readonly formHandler: Handler;
 
   public constructor() {
+    const toast = new ToastService(SettingsFormContext.toast());
+
     this.formHandler = create({
-      onBusy: "Saving...",
-      onError: SettingsFormContext.toast(),
+      onBusy: (busy: boolean) => {
+        const submitButton = SettingsFormContext.submitButton();
+        submitButton.disabled = busy;
+        submitButton.innerText = busy ? "Saving..." : "Save Settings";
+      },
+      onError: (error: Message) => {
+        if (error.value) {
+          toast.toast(error.value);
+        }
+      },
       onSubmit: async (data: SettingsData): Promise<boolean | Error> => {
-        const newSettings: SettingsData = {
-          notionKey: "",
-          parentID: "",
+        toast.toast("");
+
+        const targetSettings: SettingsData = {
+          ...(await this.getCurrentSettings()),
         };
 
-        const currentSettings = await this.getCurrentSettings();
-
-        if (data.notionKey !== currentSettings?.notionKey) {
+        if (data.notionKey !== targetSettings?.notionKey) {
           if (data.notionKey) {
             const validationResult = await this.validateNotionKey(
               data.notionKey,
@@ -42,14 +52,21 @@ class SettingsManager {
               return new Error(`Notion key: ${validationResult.message}`);
             }
           }
-          newSettings.notionKey = data.notionKey;
+          targetSettings.notionKey = data.notionKey;
         }
 
-        if (data.parentID !== currentSettings?.parentID) {
-          newSettings.parentID = data.parentID;
-        }
+        targetSettings.parentID = data.parentID;
 
-        await browser.storage.sync.set(newSettings);
+        // Commit changes.
+        await browser.storage.sync.set(targetSettings);
+
+        // Refresh locally-cached settings.
+        await this.getCurrentSettings(true);
+
+        toast.toast("Settings saved!", false);
+
+        // Return `true` to reset form state.
+        // See https://github.com/schalkventer/frrm/issues/1 for more info.
         return true;
       },
       schema: SettingsSchema,
@@ -62,6 +79,7 @@ class SettingsManager {
   public async attach(form: HTMLFormElement): Promise<void> {
     // Prefill form values.
     const currentSettings = await this.getCurrentSettings();
+
     SettingsFormContext.notionKeyInput().value = currentSettings.notionKey;
     SettingsFormContext.parentIDInput().value = currentSettings.parentID;
 
@@ -71,8 +89,14 @@ class SettingsManager {
 
   /**
    * Lazy-load the extension settings from local storage.
+   *
+   * @param reload If `true`, force the extension to reload settings.
    */
-  public async getCurrentSettings(): Promise<SettingsData> {
+  public async getCurrentSettings(reload?: boolean): Promise<SettingsData> {
+    if (reload) {
+      this.currentSettings = undefined;
+    }
+
     this.currentSettings ||= (await browser.storage.sync.get()) as SettingsData;
     return this.currentSettings;
   }
@@ -123,5 +147,21 @@ class SettingsManager {
  * Initialises the settings form when the page loads.
  */
 document.addEventListener("DOMContentLoaded", async () => {
-  await new SettingsManager().attach(SettingsFormContext.form());
+  const form = SettingsFormContext.form();
+
+  // The submit button has been moved to the header (i.e. outside the <form>), so we
+  // need to wire it up manually.
+  SettingsFormContext.submitButton().addEventListener(
+    "click",
+    (event: Event) => {
+      event.preventDefault();
+
+      // Note: call `requestSubmit`, **not** `submit()` (the latter bypasses the form's
+      // event handler.
+      form.requestSubmit();
+    },
+  );
+
+  // Initialise the settings manager.
+  await new SettingsManager().attach(form);
 });

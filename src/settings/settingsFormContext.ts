@@ -14,6 +14,10 @@ export default class SettingsFormContext {
     return this._getElement<HTMLInputElement>("parentID");
   }
 
+  public static submitButton(): HTMLButtonElement {
+    return this._getElement<HTMLButtonElement>("submitButton");
+  }
+
   public static toast(): HTMLElement {
     return this._getElement<HTMLElement>("toast");
   }

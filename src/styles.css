@@ -93,11 +93,19 @@ button:focus {
   }
 }
 
-[role="alert"] > * {
+[role="alert"] {
   animation: enter 0.3s ease;
   background: rgba(255, 0, 0, 0.05);
   padding: 1rem;
   width: 100%;
+}
+
+[role="alert"].success {
+  background: rgba(0, 255, 0, 0.05);
+}
+
+.hidden {
+  display: none;
 }
 
 /* Firefox scrollbar styling */

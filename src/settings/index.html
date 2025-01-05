@@ -13,14 +13,16 @@
         <h1>Extension Settings</h1>
 
         <div class="actions">
-          <button type="submit" class="primary">Save Settings</button>
+          <button id="submitButton" type="submit" class="primary">
+            Save Settings
+          </button>
         </div>
       </div>
 
       <div class="panel-body">
-        <form id="settingsForm">
-          <div id="toast" role="alert" aria-live="assertive"></div>
+        <div id="toast" class="hidden" role="alert" aria-live="assertive"></div>
 
+        <form id="settingsForm">
           <div class="section">
             <label for="notionKey">Notion API Key</label>
             <input

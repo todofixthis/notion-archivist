@@ -1,4 +1,14 @@
 /**
+ * Readability data extracted from an article.
+ */
+export type Article = {
+  title: string;
+  byline: string;
+  markdownContent: string;
+  length: number;
+};
+
+/**
  * Info about the browser tab from which content will be extracted.
  */
 export type BrowserTab = {

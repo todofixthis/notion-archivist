@@ -1,21 +1,15 @@
 import { Readability } from "@mozilla/readability";
 import TurndownService from "turndown";
+import { Article } from "../types";
 
 /**
- * Readability data extracted from an article.
+ * Converts HTML into Markdown format.
+ *
+ * Notion doesn't have a facility for importing content directly from Markdown, but it
+ * does allow us to present the content in a format that's easy for the user to edit
+ * before adding to Notion.
  */
-// tslint:disable-next-line:interface-over-type-literal
-export type Article = {
-  title: string;
-  byline: string;
-  markdownContent: string;
-  length: number;
-};
-
-/**
- * Converts HTML into Notion’s Markdown format.
- */
-export class ArticleFormatter {
+export class ArticleFormatterService {
   private formatter: TurndownService;
 
   constructor() {

@@ -87,7 +87,7 @@ export const create = <T extends Schema>(config: Config<T>): Handler => {
     } catch (error: any) {
       let message;
 
-      if (error.errors.length) {
+      if (error.errors?.length) {
         form.querySelector(`[name="${error.errors[0].path[0]}"]`).focus();
         message = error.errors[0].message;
       } else {

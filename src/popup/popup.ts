@@ -1,5 +1,6 @@
-import { Article, ArticleFormatter } from "../articleFormatter";
-import { BrowserTab, PageContent } from "../types";
+import { ArticleFormatterService } from "../services/articleFormatterService";
+import ToastService from "../services/toastService";
+import { Article, BrowserTab, PageContent } from "../types";
 import PopupContext from "./popupContext";
 
 /**
@@ -37,7 +38,7 @@ const extractContent = async (): Promise<FormattedArticle> => {
     tab.id,
     "extractContent",
   );
-  const article = new ArticleFormatter().formatArticle(pageContent.html);
+  const article = new ArticleFormatterService().formatArticle(pageContent.html);
 
   return {
     ...article,
@@ -62,19 +63,10 @@ const formatForCopying = (): string =>
     PopupContext.articleContent().value,
   ].join("\n");
 
-/**
- * Displays a toast notification.
- * @param message Message to display. Specify empty string to hide the toast
- * notification.
- */
-const toast = (message: string): void => {
-  const container = PopupContext.toast();
-  container.classList[message === "" ? "add" : "remove"]("hidden");
-  container.innerText = message;
-};
-
 document.addEventListener("DOMContentLoaded", async (): Promise<void> => {
-  toast("");
+  const toast = new ToastService(PopupContext.toast());
+
+  toast.toast("");
   try {
     const article: FormattedArticle = await extractContent();
 
@@ -87,7 +79,7 @@ document.addEventListener("DOMContentLoaded", async (): Promise<void> => {
     // Wire up copy button.
     const copyButton = PopupContext.copyButton();
     copyButton.addEventListener("click", async (): Promise<void> => {
-      toast("");
+      toast.toast("");
       try {
         await navigator.clipboard.writeText(formatForCopying());
         copyButton.textContent = "Copied!";
@@ -95,7 +87,7 @@ document.addEventListener("DOMContentLoaded", async (): Promise<void> => {
           copyButton.textContent = "Copy Markdown";
         }, 2000);
       } catch (e: unknown) {
-        toast(
+        toast.toast(
           e instanceof Error
             ? e.message
             : `Unexpected error when copying: ${JSON.stringify(e)}`,
@@ -105,11 +97,11 @@ document.addEventListener("DOMContentLoaded", async (): Promise<void> => {
 
     // Wire up close button.
     PopupContext.closeButton().addEventListener("click", (): void => {
-      toast("");
+      toast.toast("");
       try {
         window.close();
       } catch (e: unknown) {
-        toast(
+        toast.toast(
           e instanceof Error
             ? e.message
             : `Unexpected error when closing popup: ${JSON.stringify(e)}`,
@@ -117,7 +109,7 @@ document.addEventListener("DOMContentLoaded", async (): Promise<void> => {
       }
     });
   } catch (e: unknown) {
-    toast(
+    toast.toast(
       e instanceof Error
         ? e.message
         : `Unexpected error when parsing content: ${JSON.stringify(e)}`,
