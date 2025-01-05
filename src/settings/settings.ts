@@ -3,26 +3,24 @@ import {
   isNotionClientError,
   NotionClientError,
 } from "@notionhq/client";
-import { z } from "zod";
+import SettingsService, {
+  SettingsData,
+  SettingsSchema,
+} from "../services/settingsService";
 import ToastService from "../services/toastService";
 import { attach, create, Handler, Message } from "./frrm";
 import SettingsFormContext from "./settingsFormContext";
-
-const SettingsSchema = z.object({
-  notionKey: z.string(),
-  parentID: z.string(),
-});
-
-type SettingsData = z.infer<typeof SettingsSchema>;
 
 /**
  * Accesses, validates, and stores settings for the extension.
  */
 class SettingsManager {
-  protected currentSettings?: SettingsData;
+  protected readonly settingsService: SettingsService;
   protected readonly formHandler: Handler;
 
   public constructor() {
+    this.settingsService = new SettingsService();
+
     const toast = new ToastService(SettingsFormContext.toast());
 
     this.formHandler = create({
@@ -40,7 +38,7 @@ class SettingsManager {
         toast.toast("");
 
         const targetSettings: SettingsData = {
-          ...(await this.getCurrentSettings()),
+          ...(await this.settingsService.getSettings()),
         };
 
         if (data.notionKey !== targetSettings?.notionKey) {
@@ -58,11 +56,7 @@ class SettingsManager {
         targetSettings.parentID = data.parentID;
 
         // Commit changes.
-        await browser.storage.sync.set(targetSettings);
-
-        // Refresh locally-cached settings.
-        await this.getCurrentSettings(true);
-
+        await this.settingsService.setSettings(targetSettings);
         toast.toast("Settings saved!", false);
 
         // Return `true` to reset form state.
@@ -78,27 +72,13 @@ class SettingsManager {
    */
   public async attach(form: HTMLFormElement): Promise<void> {
     // Prefill form values.
-    const currentSettings = await this.getCurrentSettings();
+    const currentSettings = await this.settingsService.getSettings();
 
     SettingsFormContext.notionKeyInput().value = currentSettings.notionKey;
     SettingsFormContext.parentIDInput().value = currentSettings.parentID;
 
     // Attach form handler.
     attach(form, this.formHandler);
-  }
-
-  /**
-   * Lazy-load the extension settings from local storage.
-   *
-   * @param reload If `true`, force the extension to reload settings.
-   */
-  public async getCurrentSettings(reload?: boolean): Promise<SettingsData> {
-    if (reload) {
-      this.currentSettings = undefined;
-    }
-
-    this.currentSettings ||= (await browser.storage.sync.get()) as SettingsData;
-    return this.currentSettings;
   }
 
   /**
@@ -110,7 +90,7 @@ class SettingsManager {
    * @protected
    */
   protected async getNotionClient(notionKey?: string): Promise<null | Client> {
-    notionKey ||= (await this.getCurrentSettings()).notionKey;
+    notionKey ||= (await this.settingsService.getSettings()).notionKey;
     return notionKey ? new Client({ auth: notionKey }) : null;
   }
 
