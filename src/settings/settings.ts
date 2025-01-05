@@ -11,13 +11,13 @@ import SettingsFormContext from "./settingsFormContext";
  * Accesses, validates, and stores settings for the extension.
  */
 class SettingsManager {
-  protected readonly settingsService: SettingsService;
   protected readonly formHandler: Handler;
+  protected readonly settingsService: SettingsService;
+  protected readonly toast: ToastService;
 
   public constructor() {
     this.settingsService = new SettingsService();
-
-    const toast = new ToastService(SettingsFormContext.toast());
+    this.toast = new ToastService(SettingsFormContext.toast());
 
     this.formHandler = create({
       onBusy: (busy: boolean) => {
@@ -27,11 +27,11 @@ class SettingsManager {
       },
       onError: (error: Message) => {
         if (error.value) {
-          toast.toast(error.value);
+          this.toast.toast(error.value);
         }
       },
       onSubmit: async (data: SettingsData): Promise<boolean | Error> => {
-        toast.toast("");
+        this.toast.toast("");
         try {
           await this.settingsService.setSettings(data);
         } catch (e: unknown) {
@@ -40,7 +40,7 @@ class SettingsManager {
           }
           throw e;
         }
-        toast.toast("Settings saved!", false);
+        this.toast.toast("Settings saved!", false);
 
         // Return `true` to reset form state.
         // See https://github.com/schalkventer/frrm/issues/1 for more info.
