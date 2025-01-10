@@ -67,15 +67,28 @@ document.addEventListener("DOMContentLoaded", async (): Promise<void> => {
         notionButton.textContent = "Saving...";
         notionButton.disabled = true;
 
-        await new SettingsService().withNotion(async (notion) => {
-          await notion.createPage(article);
-        });
+        const result = await new SettingsService().withNotion(async (notion) =>
+          notion.createPage(article),
+        );
 
-        notionButton.textContent = "Copied!";
-        setTimeout((): void => {
-          notionButton.textContent = "Save to Notion";
-          notionButton.disabled = false;
-        }, 2000);
+        if (result) {
+          const message = document.createElement("div");
+          message.innerText = "Page created!";
+          const link = document.createElement("a");
+          link.setAttribute("href", result.url);
+          link.innerText =
+            result.properties.Name.type === "title"
+              ? result.properties.Name.title[0].plain_text
+              : "(unknown title)";
+          message.appendChild(link);
+
+          toast.toast(message, false, false);
+
+          setTimeout((): void => {
+            notionButton.textContent = "Save to Notion";
+            notionButton.disabled = false;
+          }, 2000);
+        }
       } catch (e: unknown) {
         toast.toast(
           e instanceof Error ? e.message : `Unexpected error: ${JSON.stringify(e)}`,

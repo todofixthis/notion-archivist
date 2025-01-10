@@ -1,4 +1,5 @@
 import { Client } from "@notionhq/client";
+import { PageObjectResponse } from "@notionhq/client/build/src/api-endpoints";
 import { FormattedArticle } from "../../popup/popup";
 import { ISettingsService } from "../settings/types";
 import { ConfigurationError, isNotionError, NotionError } from "./errors";
@@ -39,8 +40,8 @@ export default class NotionService {
   /**
    * Creates a new page with the specified content.
    */
-  public async createPage(article: FormattedArticle): Promise<void> {
-    await (
+  public async createPage(article: FormattedArticle): Promise<PageObjectResponse> {
+    const result = await (
       await this.getClient()
     ).pages.create({
       children: [],
@@ -57,6 +58,8 @@ export default class NotionService {
         URL: { url: article.url },
       },
     });
+
+    return result as PageObjectResponse;
   }
 
   /**

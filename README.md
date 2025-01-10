@@ -4,6 +4,7 @@
 - Validate parent ID when saving settings.
   - Can also use this as an opportunity to detect whether it is a database ID or a page
     ID.
+  - Also need to figure out how to detect the title property for pages.
 - Only create button click handlers once.
 - Disable popup inputs/buttons whilst saving to Notion.
 - Guide the user to the plugin settings if Notion API key and/or parent ID not set.
@@ -24,3 +25,5 @@
 
 - Set up internal integration in Notion and copy secret key.
 - How to get the parent database/page ID.
+  - If you want a database ID make sure you get the link to the database/view itself,
+    not the page on which the database appears!

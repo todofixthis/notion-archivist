@@ -29,8 +29,14 @@ export default class ToastService {
    * @param message Message to display. Specify empty string to hide the toast
    * notification.
    * @param error Whether the message indicates an error (`true`) or success (`false`).
+   * @param autoHide Whether to automatically hide the toast message after a delay.
+   * Default value is `!error`.
    */
-  public toast(message: string, error: boolean = true): void {
+  public toast(
+    message: string | HTMLElement,
+    error: boolean = true,
+    autoHide: boolean | null = null,
+  ): void {
     if (this.toastHider !== null) {
       clearTimeout(this.toastHider);
     }
@@ -38,10 +44,18 @@ export default class ToastService {
     this.container.classList[message === "" ? "add" : "remove"]("hidden");
     this.container.classList[error ? "remove" : "add"]("success");
 
-    (this.container.querySelector('div[role="alert"]')! as HTMLElement).innerText =
-      message;
+    const messageContainer = this.container.querySelector(
+      'div[role="alert"]',
+    )! as HTMLElement;
 
-    if (!error) {
+    if (message instanceof HTMLElement) {
+      messageContainer.innerHTML = "";
+      messageContainer.appendChild(message);
+    } else {
+      messageContainer.innerText = message;
+    }
+
+    if (autoHide || (autoHide === null && !error)) {
       this.toastHider = setTimeout(() => this.container.classList.add("hidden"), 2000);
     }
   }
