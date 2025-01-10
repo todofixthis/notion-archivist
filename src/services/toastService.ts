@@ -62,7 +62,7 @@ export default class ToastService {
     }
 
     if (autoHide || (autoHide === null && !error)) {
-      this.toastHider = setTimeout(this.hide, 2000);
+      this.toastHider = setTimeout(this.hide.bind(this), 2000);
     }
   }
 }
