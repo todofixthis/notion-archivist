@@ -1,9 +1,5 @@
-import {
-  Client,
-  isNotionClientError,
-  NotionClientError,
-} from "@notionhq/client";
 import { z } from "zod";
+import NotionService, { TestAccessResult } from "./notionService";
 
 export const SettingsSchema = z.object({
   notionKey: z.string(),
@@ -49,8 +45,8 @@ export default class SettingsService {
         const validationResult = await this.validateNotionKey(
           settings.notionKey,
         );
-        if (isNotionClientError(validationResult)) {
-          throw validationResult;
+        if (validationResult && !validationResult.hasAccess) {
+          throw validationResult.reason;
         }
       }
       targetSettings.notionKey = settings.notionKey;
@@ -63,16 +59,21 @@ export default class SettingsService {
   }
 
   /**
-   * Initialises a Notion API client.
+   * If the extension is configured with a valid API key, executes a callback with a
+   * Notion API client. Otherwise, acts as a no-op.
    *
-   * Note: assumes private integration (requires bearer token, not OAuth2).
-   *
-   * @param notionKey Notion integration secret key.
-   * @protected
+   * @param callback If the extension is configured correctly, will be called with a
+   * Notion API client as the first argument.
+   * @returns The result from the callback if it was called, else `null`.
    */
-  protected async getNotionClient(notionKey?: string): Promise<null | Client> {
-    notionKey ||= (await this.getSettings()).notionKey;
-    return notionKey ? new Client({ auth: notionKey }) : null;
+  public async withNotion<RT>(
+    callback: (notion: NotionService) => Promise<RT>,
+  ): Promise<RT | null> {
+    const apiKey = (await this.getSettings()).notionKey;
+    if (apiKey !== "") {
+      return callback(new NotionService(this));
+    }
+    return null;
   }
 
   /**
@@ -81,25 +82,43 @@ export default class SettingsService {
    * Note: assumes private integration (requires bearer token, not OAuth2).
    *
    * @param notionKey Notion integration secret key.
+   *
    * @protected
    */
   protected async validateNotionKey(
     notionKey: string,
-  ): Promise<void | NotionClientError> {
-    const notionClient = await this.getNotionClient(notionKey);
-    if (!notionClient) {
-      // `notionKey` is empty, so nothing to validate.
+  ): Promise<void | TestAccessResult> {
+    if (notionKey === "") {
       return;
     }
 
-    try {
-      // Try to search for a page to verify the token.
-      await notionClient.search({ query: "test", page_size: 1 });
-    } catch (e: unknown) {
-      if (isNotionClientError(e)) {
-        return e;
-      }
-      throw e;
-    }
+    return new NotionService(new TemporarySettings({ notionKey })).testAccess();
+  }
+}
+
+/**
+ * Provides a sandbox for simulating different settings (e.g., to validate new
+ * values that the user has entered into the extension's settings form).
+ */
+// tslint:disable-next-line:max-classes-per-file
+class TemporarySettings extends SettingsService {
+  protected settings: SettingsData;
+
+  public constructor(settings: Partial<SettingsData>) {
+    super();
+
+    this.settings = {
+      notionKey: "",
+      parentID: "",
+      ...settings,
+    };
+  }
+
+  public async getSettings(): Promise<SettingsData> {
+    return this.settings;
+  }
+
+  public async setSettings(): Promise<SettingsData> {
+    throw new Error("Cannot set settings in TemporarySettings");
   }
 }
