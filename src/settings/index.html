@@ -13,14 +13,18 @@
         <h1>Extension Settings</h1>
 
         <div class="actions">
-          <button id="submitButton" type="submit" class="primary">
-            Save Settings
-          </button>
+          <button id="submitButton" type="submit" class="primary">Save Settings</button>
         </div>
       </div>
 
       <div class="panel-body">
-        <div id="toast" class="hidden" role="alert" aria-live="assertive"></div>
+        <div id="toast" class="hidden">
+          <div role="alert" aria-live="assertive"></div>
+
+          <div class="actions">
+            <button id="toastCloseButton">X</button>
+          </div>
+        </div>
 
         <form id="settingsForm">
           <div class="section">
@@ -41,18 +45,12 @@
 
           <div class="section">
             <label for="parentID">Set parent database/page ID</label>
-            <input
-              type="text"
-              id="parentID"
-              name="parentID"
-              placeholder="Search"
-            />
+            <input type="text" id="parentID" name="parentID" placeholder="Search" />
             <p class="helper-text">
-              Archivist will create new pages under this parent database/page.
-              To get the ID, navigate to the database or page in Notion, select
-              "Copy Link" from the meatball menu, and then enter the part of the
-              URL between the last <code>/</code> and the <code>?</code> into
-              this input.
+              Archivist will create new pages under this parent database/page. To get
+              the ID, navigate to the database or page in Notion, select "Copy Link"
+              from the meatball menu, and then enter the part of the URL between the
+              last <code>/</code> and the <code>?</code> into this input.
             </p>
           </div>
         </form>

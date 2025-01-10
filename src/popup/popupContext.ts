@@ -26,8 +26,8 @@ export default class PopupContext {
     return this._getElement<HTMLButtonElement>("closeButton");
   }
 
-  public static copyButton(): HTMLButtonElement {
-    return this._getElement<HTMLButtonElement>("copyButton");
+  public static notionButton(): HTMLButtonElement {
+    return this._getElement<HTMLButtonElement>("notionButton");
   }
 
   public static toast(): HTMLElement {

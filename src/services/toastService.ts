@@ -8,6 +8,19 @@ export default class ToastService {
   public constructor(container: HTMLElement) {
     this.container = container;
     this.toastHider = null;
+
+    // Wire up the close button.
+    this.container
+      .querySelector("#toastCloseButton")!
+      .addEventListener("click", (event: Event) => {
+        event.preventDefault();
+
+        if (this.toastHider !== null) {
+          clearTimeout(this.toastHider);
+        }
+
+        this.container.classList.add("hidden");
+      });
   }
 
   /**
@@ -24,11 +37,12 @@ export default class ToastService {
 
     this.container.classList[message === "" ? "add" : "remove"]("hidden");
     this.container.classList[error ? "remove" : "add"]("success");
-    this.container.innerText = message;
 
-    this.toastHider = setTimeout(
-      () => this.container.classList.add("hidden"),
-      2000,
-    );
+    (this.container.querySelector('div[role="alert"]')! as HTMLElement).innerText =
+      message;
+
+    if (!error) {
+      this.toastHider = setTimeout(() => this.container.classList.add("hidden"), 2000);
+    }
   }
 }

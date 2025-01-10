@@ -1,4 +1,5 @@
 import { Client } from "@notionhq/client";
+import { FormattedArticle } from "../../popup/popup";
 import { ISettingsService } from "../settings/types";
 import { ConfigurationError, isNotionError, NotionError } from "./errors";
 
@@ -18,8 +19,7 @@ export type TestAccessResult = {
  * Note: this function is generally not invoked directly; instead use
  * {@link SettingsService.withNotion} or {@link NotionService}.
  */
-export const getClient = (apiKey: string): Client =>
-  new Client({ auth: apiKey });
+export const getClient = (apiKey: string): Client => new Client({ auth: apiKey });
 
 /**
  * Wrapper for Notion API client to provide application-specific functionality.
@@ -34,6 +34,29 @@ export default class NotionService {
   public constructor(settings: ISettingsService) {
     this.client = null;
     this.settings = settings;
+  }
+
+  /**
+   * Creates a new page with the specified content.
+   */
+  public async createPage(article: FormattedArticle): Promise<void> {
+    await (
+      await this.getClient()
+    ).pages.create({
+      children: [],
+      cover: {
+        external: { url: article.coverURL },
+        type: "external",
+      },
+      parent: {
+        database_id: (await this.settings.getSettings()).parentID,
+        type: "database_id",
+      },
+      properties: {
+        Name: { title: [{ text: { content: article.title } }] },
+        URL: { url: article.url },
+      },
+    });
   }
 
   /**

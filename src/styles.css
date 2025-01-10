@@ -93,19 +93,25 @@ button:focus {
   }
 }
 
-[role="alert"] {
+div#toast {
+  align-items: center;
   animation: enter 0.3s ease;
   background: rgba(255, 0, 0, 0.05);
-  padding: 1rem;
-  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  padding: 4px 16px;
 }
 
-[role="alert"].success {
+div#toast.success {
   background: rgba(0, 255, 0, 0.05);
 }
 
+div#toast button {
+  min-width: 0;
+}
+
 .hidden {
-  display: none;
+  display: none !important;
 }
 
 /* Firefox scrollbar styling */

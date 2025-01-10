@@ -36,9 +36,7 @@ export default class SettingsService implements ISettingsService {
 
     if (settings.notionKey !== targetSettings?.notionKey) {
       if (settings.notionKey) {
-        const validationResult = await this.validateNotionKey(
-          settings.notionKey,
-        );
+        const validationResult = await this.validateNotionKey(settings.notionKey);
         if (validationResult && !validationResult.hasAccess) {
           throw validationResult.reason;
         }

@@ -58,8 +58,7 @@ export const create = <T extends Schema>(config: Config<T>): Handler => {
         event.preventDefault();
 
         if (response !== true) {
-          const message =
-            response instanceof Error ? response.message : response;
+          const message = response instanceof Error ? response.message : response;
 
           if (typeof onError === "function") {
             onError({ value: message, timestamp: Date.now() });

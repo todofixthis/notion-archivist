@@ -71,16 +71,13 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   // The submit button has been moved to the header (i.e. outside the <form>), so we
   // need to wire it up manually.
-  SettingsFormContext.submitButton().addEventListener(
-    "click",
-    (event: Event) => {
-      event.preventDefault();
+  SettingsFormContext.submitButton().addEventListener("click", (event: Event) => {
+    event.preventDefault();
 
-      // Note: call `requestSubmit`, **not** `submit()` (the latter bypasses the form's
-      // event handler.
-      form.requestSubmit();
-    },
-  );
+    // Note: call `requestSubmit`, **not** `submit()` (the latter bypasses the form's
+    // event handler.
+    form.requestSubmit();
+  });
 
   // Initialise the settings manager.
   await new SettingsManager().attach(form);

@@ -14,11 +14,17 @@
 
         <div class="actions">
           <button id="closeButton">Close</button>
-          <button id="copyButton" class="primary">Copy Markdown</button>
+          <button id="notionButton" class="primary">Save to Notion</button>
         </div>
       </div>
 
-      <div id="toast" class="hidden" role="alert" aria-live="assertive"></div>
+      <div id="toast" class="hidden">
+        <div role="alert" aria-live="assertive"></div>
+
+        <div class="actions">
+          <button id="toastCloseButton">X</button>
+        </div>
+      </div>
 
       <div class="panel-body">
         <div class="section">

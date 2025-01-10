@@ -1,4 +1,5 @@
 import { ArticleFormatterService } from "../services/articleFormatterService";
+import SettingsService from "../services/settings/service";
 import ToastService from "../services/toastService";
 import { Article, BrowserTab, PageContent } from "../types";
 import PopupContext from "./popupContext";
@@ -7,9 +8,7 @@ import PopupContext from "./popupContext";
  * Get information about the current browser tab.
  */
 const getCurrentTab = async (): Promise<BrowserTab> => {
-  const tab = (
-    await browser.tabs.query({ active: true, currentWindow: true })
-  )[0];
+  const tab = (await browser.tabs.query({ active: true, currentWindow: true }))[0];
 
   if (!(tab?.id && tab.url)) {
     throw new Error("Cannot find current tab");
@@ -47,22 +46,6 @@ const extractContent = async (): Promise<FormattedArticle> => {
   };
 };
 
-/**
- * Consolidates article data, so that we can copy it to clipboard as a string value.
- *
- * If the user has modified any values (e.g., by editing the Markdown content in the
- * textarea), the result will reflect these changes.
- */
-const formatForCopying = (): string =>
-  [
-    `# ${PopupContext.articleTitle().value}`,
-    `**URL:** ${PopupContext.articleURL().value}`,
-    `**Author:** ${PopupContext.articleByline().value}`,
-    `**Cover:** ${PopupContext.articleCoverURL().value}`,
-    "---",
-    PopupContext.articleContent().value,
-  ].join("\n");
-
 document.addEventListener("DOMContentLoaded", async (): Promise<void> => {
   const toast = new ToastService(PopupContext.toast());
 
@@ -76,22 +59,30 @@ document.addEventListener("DOMContentLoaded", async (): Promise<void> => {
     PopupContext.articleTitle().value = article.title;
     PopupContext.articleURL().value = article.url;
 
-    // Wire up copy button.
-    const copyButton = PopupContext.copyButton();
-    copyButton.addEventListener("click", async (): Promise<void> => {
+    // Wire up the 'Save to Notion' button.
+    const notionButton = PopupContext.notionButton();
+    notionButton.addEventListener("click", async (): Promise<void> => {
       toast.toast("");
       try {
-        await navigator.clipboard.writeText(formatForCopying());
-        copyButton.textContent = "Copied!";
+        notionButton.textContent = "Saving...";
+        notionButton.disabled = true;
+
+        await new SettingsService().withNotion(async (notion) => {
+          await notion.createPage(article);
+        });
+
+        notionButton.textContent = "Copied!";
         setTimeout((): void => {
-          copyButton.textContent = "Copy Markdown";
+          notionButton.textContent = "Save to Notion";
+          notionButton.disabled = false;
         }, 2000);
       } catch (e: unknown) {
         toast.toast(
-          e instanceof Error
-            ? e.message
-            : `Unexpected error when copying: ${JSON.stringify(e)}`,
+          e instanceof Error ? e.message : `Unexpected error: ${JSON.stringify(e)}`,
         );
+
+        notionButton.textContent = "Save to Notion";
+        notionButton.disabled = false;
       }
     });
 
@@ -102,9 +93,7 @@ document.addEventListener("DOMContentLoaded", async (): Promise<void> => {
         window.close();
       } catch (e: unknown) {
         toast.toast(
-          e instanceof Error
-            ? e.message
-            : `Unexpected error when closing popup: ${JSON.stringify(e)}`,
+          e instanceof Error ? e.message : `Unexpected error: ${JSON.stringify(e)}`,
         );
       }
     });
