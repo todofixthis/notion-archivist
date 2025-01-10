@@ -11,7 +11,7 @@ const getCurrentTab = async (): Promise<BrowserTab> => {
   const tab = (await browser.tabs.query({ active: true, currentWindow: true }))[0];
 
   if (!(tab?.id && tab.url)) {
-    throw new Error("Cannot find current tab");
+    throw new Error("Cannot find the current tab");
   }
 
   return {
@@ -49,7 +49,7 @@ const extractContent = async (): Promise<FormattedArticle> => {
 document.addEventListener("DOMContentLoaded", async (): Promise<void> => {
   const toast = new ToastService(PopupContext.toast());
 
-  toast.toast("");
+  toast.hide();
   try {
     const article: FormattedArticle = await extractContent();
 
@@ -62,7 +62,7 @@ document.addEventListener("DOMContentLoaded", async (): Promise<void> => {
     // Wire up the 'Save to Notion' button.
     const notionButton = PopupContext.notionButton();
     notionButton.addEventListener("click", async (): Promise<void> => {
-      toast.toast("");
+      toast.hide();
       try {
         notionButton.textContent = "Saving...";
         notionButton.disabled = true;
@@ -73,16 +73,16 @@ document.addEventListener("DOMContentLoaded", async (): Promise<void> => {
 
         if (result) {
           const message = document.createElement("div");
-          message.innerText = "Page created!";
+          message.innerText = "Page created! ";
           const link = document.createElement("a");
           link.setAttribute("href", result.url);
           link.innerText =
             result.properties.Name.type === "title"
               ? result.properties.Name.title[0].plain_text
-              : "(unknown title)";
+              : "link";
           message.appendChild(link);
 
-          toast.toast(message, false, false);
+          toast.show(message, false, false);
 
           setTimeout((): void => {
             notionButton.textContent = "Save to Notion";
@@ -90,7 +90,7 @@ document.addEventListener("DOMContentLoaded", async (): Promise<void> => {
           }, 2000);
         }
       } catch (e: unknown) {
-        toast.toast(
+        toast.show(
           e instanceof Error ? e.message : `Unexpected error: ${JSON.stringify(e)}`,
         );
 
@@ -101,17 +101,17 @@ document.addEventListener("DOMContentLoaded", async (): Promise<void> => {
 
     // Wire up close button.
     PopupContext.closeButton().addEventListener("click", (): void => {
-      toast.toast("");
+      toast.hide();
       try {
         window.close();
       } catch (e: unknown) {
-        toast.toast(
+        toast.show(
           e instanceof Error ? e.message : `Unexpected error: ${JSON.stringify(e)}`,
         );
       }
     });
   } catch (e: unknown) {
-    toast.toast(
+    toast.show(
       e instanceof Error
         ? e.message
         : `Unexpected error when parsing content: ${JSON.stringify(e)}`,

@@ -25,11 +25,11 @@ class SettingsManager {
       },
       onError: (error: Message) => {
         if (error.value) {
-          this.toast.toast(error.value);
+          this.toast.show(error.value);
         }
       },
       onSubmit: async (data: SettingsData): Promise<boolean | Error> => {
-        this.toast.toast("");
+        this.toast.hide();
         try {
           await this.settingsService.setSettings(data);
         } catch (e: unknown) {
@@ -38,7 +38,7 @@ class SettingsManager {
           }
           throw e;
         }
-        this.toast.toast("Settings saved!", false);
+        this.toast.show("Settings saved!", false);
 
         // Return `true` to reset form state.
         // See https://github.com/schalkventer/frrm/issues/1 for more info.

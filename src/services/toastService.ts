@@ -14,17 +14,23 @@ export default class ToastService {
       .querySelector("#toastCloseButton")!
       .addEventListener("click", (event: Event) => {
         event.preventDefault();
-
-        if (this.toastHider !== null) {
-          clearTimeout(this.toastHider);
-        }
-
-        this.container.classList.add("hidden");
+        this.hide();
       });
   }
 
   /**
-   * Displays a toast notification.
+   * Hides the toast notification.
+   */
+  public hide(): void {
+    if (this.toastHider !== null) {
+      clearTimeout(this.toastHider);
+    }
+
+    this.container.classList.add("hidden");
+  }
+
+  /**
+   * Displays the toast notification.
    *
    * @param message Message to display. Specify empty string to hide the toast
    * notification.
@@ -32,7 +38,7 @@ export default class ToastService {
    * @param autoHide Whether to automatically hide the toast message after a delay.
    * Default value is `!error`.
    */
-  public toast(
+  public show(
     message: string | HTMLElement,
     error: boolean = true,
     autoHide: boolean | null = null,
@@ -56,7 +62,7 @@ export default class ToastService {
     }
 
     if (autoHide || (autoHide === null && !error)) {
-      this.toastHider = setTimeout(() => this.container.classList.add("hidden"), 2000);
+      this.toastHider = setTimeout(this.hide, 2000);
     }
   }
 }
