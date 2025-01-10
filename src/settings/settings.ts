@@ -1,8 +1,6 @@
 import { isNotionClientError } from "@notionhq/client";
-import SettingsService, {
-  SettingsData,
-  SettingsSchema,
-} from "../services/settingsService";
+import SettingsService from "../services/settings/service";
+import { SettingsData, SettingsSchema } from "../services/settings/types";
 import ToastService from "../services/toastService";
 import { attach, create, Handler, Message } from "./frrm";
 import SettingsFormContext from "./settingsFormContext";

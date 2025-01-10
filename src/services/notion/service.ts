@@ -1,5 +1,5 @@
 import { Client } from "@notionhq/client";
-import SettingsService from "../settingsService";
+import { ISettingsService } from "../settings/types";
 import { ConfigurationError, isNotionError, NotionError } from "./errors";
 
 /**
@@ -29,9 +29,9 @@ export const getClient = (apiKey: string): Client =>
  */
 export default class NotionService {
   protected client: Client | null;
-  protected settings: SettingsService;
+  protected settings: ISettingsService;
 
-  public constructor(settings: SettingsService) {
+  public constructor(settings: ISettingsService) {
     this.client = null;
     this.settings = settings;
   }

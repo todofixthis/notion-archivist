@@ -1,17 +1,11 @@
-import { z } from "zod";
-import NotionService, { TestAccessResult } from "./notion/service";
-
-export const SettingsSchema = z.object({
-  notionKey: z.string(),
-  parentID: z.string(),
-});
-
-export type SettingsData = z.infer<typeof SettingsSchema>;
+import NotionService, { TestAccessResult } from "../notion/service";
+import { TemporarySettings } from "./temporarySettings";
+import { ISettingsService, SettingsData } from "./types";
 
 /**
  * Provides access to extension settings.
  */
-export default class SettingsService {
+export default class SettingsService implements ISettingsService {
   protected settings: SettingsData | undefined;
 
   /**
@@ -62,8 +56,7 @@ export default class SettingsService {
    * If the extension is configured with a valid API key, executes a callback with a
    * Notion API client. Otherwise, acts as a no-op.
    *
-   * @param callback If the extension is configured correctly, will be called with a
-   * Notion API client as the first argument.
+   * @param callback Called with a Notion API client as the first argument.
    * @returns The result from the callback if it was called, else `null`.
    */
   public async withNotion<RT>(
@@ -89,32 +82,5 @@ export default class SettingsService {
     notionKey: string,
   ): Promise<void | TestAccessResult> {
     return new NotionService(new TemporarySettings({ notionKey })).testAccess();
-  }
-}
-
-/**
- * Provides a sandbox for simulating different settings (e.g., to validate new
- * values that the user has entered into the extension's settings form).
- */
-// tslint:disable-next-line:max-classes-per-file
-class TemporarySettings extends SettingsService {
-  protected settings: SettingsData;
-
-  public constructor(settings: Partial<SettingsData>) {
-    super();
-
-    this.settings = {
-      notionKey: "",
-      parentID: "",
-      ...settings,
-    };
-  }
-
-  public async getSettings(): Promise<SettingsData> {
-    return this.settings;
-  }
-
-  public async setSettings(): Promise<SettingsData> {
-    throw new Error("Cannot set settings in TemporarySettings");
   }
 }
