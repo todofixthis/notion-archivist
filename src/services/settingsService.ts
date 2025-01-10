@@ -1,5 +1,5 @@
 import { z } from "zod";
-import NotionService, { TestAccessResult } from "./notionService";
+import NotionService, { TestAccessResult } from "./notion/service";
 
 export const SettingsSchema = z.object({
   notionKey: z.string(),
@@ -88,10 +88,6 @@ export default class SettingsService {
   protected async validateNotionKey(
     notionKey: string,
   ): Promise<void | TestAccessResult> {
-    if (notionKey === "") {
-      return;
-    }
-
     return new NotionService(new TemporarySettings({ notionKey })).testAccess();
   }
 }

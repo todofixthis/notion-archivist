@@ -1,9 +1,6 @@
-import {
-  Client,
-  isNotionClientError,
-  NotionClientError,
-} from "@notionhq/client";
-import SettingsService from "./settingsService";
+import { Client } from "@notionhq/client";
+import SettingsService from "../settingsService";
+import { ConfigurationError, isNotionError, NotionError } from "./errors";
 
 /**
  * Result from calling {@link NotionService.testAccess}.
@@ -12,11 +9,14 @@ export type TestAccessResult = {
   /** Whether the Notion client has access. */
   hasAccess: boolean;
   /** If `result` is `false`, this contains the exception explaining why. */
-  reason: NotionClientError | null;
+  reason: NotionError | null;
 };
 
 /**
  * Creates a configured Notion API client instance.
+ *
+ * Note: this function is generally not invoked directly; instead use
+ * {@link SettingsService.withNotion} or {@link NotionService}.
  */
 export const getClient = (apiKey: string): Client =>
   new Client({ auth: apiKey });
@@ -47,7 +47,7 @@ export default class NotionService {
         reason: null,
       };
     } catch (e: unknown) {
-      if (isNotionClientError(e)) {
+      if (isNotionError(e)) {
         return {
           hasAccess: false,
           reason: e,
@@ -61,7 +61,12 @@ export default class NotionService {
    * Returns a configured Notion API client.
    */
   public async getClient(): Promise<Client> {
-    this.client ||= getClient((await this.settings.getSettings()).notionKey);
+    const apiKey = (await this.settings.getSettings()).notionKey;
+    if (apiKey === "") {
+      throw new ConfigurationError("Notion API key setting is empty.");
+    }
+
+    this.client ||= getClient(apiKey);
     return this.client;
   }
 }
