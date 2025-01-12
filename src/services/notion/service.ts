@@ -1,14 +1,18 @@
 import { Client } from "@notionhq/client";
-import { PageObjectResponse } from "@notionhq/client/build/src/api-endpoints";
+import {
+  BlockObjectRequest,
+  PageObjectResponse,
+} from "@notionhq/client/build/src/api-endpoints";
 import { FormattedArticle } from "../../popup/popup";
 import { ISettingsService } from "../settings/types";
 import { ConfigurationError, isNotionError, NotionError } from "./errors";
+import MarkdownParser from "./markdownParser";
 
 /**
  * Result from calling {@link NotionService.testAccess}.
  */
 export type TestAccessResult = {
-  /** Whether the Notion client has access. */
+  /** Indicates whether the Notion API client has access. */
   hasAccess: boolean;
   /** If `result` is `false`, this contains the exception explaining why. */
   reason: NotionError | null;
@@ -23,7 +27,8 @@ export type TestAccessResult = {
 export const getClient = (apiKey: string): Client => new Client({ auth: apiKey });
 
 /**
- * Wrapper for Notion API client to provide application-specific functionality.
+ * Wrapper for the Notion API client that provides functionality specific to this
+ * extension.
  *
  * Note: this class is generally not invoked directly; instead use
  * {@link SettingsService.withNotion}.
@@ -41,10 +46,36 @@ export default class NotionService {
    * Creates a new page with the specified content.
    */
   public async createPage(article: FormattedArticle): Promise<PageObjectResponse> {
+    const blocks: BlockObjectRequest[] = [];
+
+    // Insert byline if present.
+    if (article.byline !== "") {
+      blocks.push({
+        paragraph: {
+          rich_text: [
+            {
+              text: {
+                content: "Author: ",
+              },
+              type: "text",
+            },
+            {
+              annotations: { italic: true },
+              text: { content: article.byline },
+              type: "text",
+            },
+          ],
+        },
+        type: "paragraph",
+      });
+    }
+
+    blocks.push(...MarkdownParser.blocksFromMarkdown(article.markdownContent));
+
     const result = await (
       await this.getClient()
     ).pages.create({
-      children: [],
+      children: blocks,
       cover: {
         external: { url: article.coverURL },
         type: "external",

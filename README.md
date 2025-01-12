@@ -1,6 +1,8 @@
 # TODO
 
 - Create the page in Notion.
+- Use the popup input values rather than the parsed article content (oops 😅).
+- If the parent ID is entered as a URL, try to extract+save the ID instead.
 - Validate parent ID when saving settings.
   - Can also use this as an opportunity to detect whether it is a database ID or a page
     ID.
@@ -14,7 +16,7 @@
   - Clean up title and byline (e.g. remove site name suffix).
 - CI pipeline
 - Add CD
-- Renovatebot
+- Configure renovatebot/dependabot.
 - Cover image picker
 - Autocompletion for parent page picker.
 - Detect page properties when validating the parent ID and optionally assign values to
@@ -25,5 +27,5 @@
 
 - Set up internal integration in Notion and copy secret key.
 - How to get the parent database/page ID.
-  - If you want a database ID make sure you get the link to the database/view itself,
+  - If you want a database ID, make sure you get the link to the database/view itself,
     not the page on which the database appears!
